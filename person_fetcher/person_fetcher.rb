@@ -3,12 +3,16 @@ require 'json'
 require 'sunlight'
 
 class PersonFetcher
+  PRINT_QUEUE = "print_queue"
+  PRINT_QUEUE_PROGRESS = "print_queue_in_process"
+  WAITING_QUEUE = "waiting_queue"
+  WAITING_QUEUE_PROGRESS = "waiting_queue_in_process"
   attr_accessor :redis, :waiting_queue, :print_queue
 
   def initialize
     @redis = Redis.new
-    @waiting_queue = Redis::Queue.new("waiting_queue", "in_process", :redis => redis)
-    @print_queue   = Redis::Queue.new("print_queue", "in_process", :redis => redis)
+    @waiting_queue = Redis::Queue.new(WAITING_QUEUE, WAITING_QUEUE_PROGRESS, :redis => redis)
+    @print_queue   = Redis::Queue.new(PRINT_QUEUE, PRINT_QUEUE_PROGRESS, :redis => redis)
     Sunlight::Base.api_key = "f36d4c02185c42be86bcb6ab7c9c2091"
   end
 
@@ -22,6 +26,7 @@ class PersonFetcher
       puts message
       person = JSON.parse(message)
       person.merge!(senator: fetch_senator(person['zipcode']))
+      puts person.inspect
       add_to_print_queue(person)
     end
   end
@@ -35,5 +40,3 @@ class PersonFetcher
     "#{senator.firstname} #{senator.lastname}"
   end
 end
-
-

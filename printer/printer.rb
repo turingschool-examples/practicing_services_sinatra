@@ -4,7 +4,7 @@ require "csv"
 
 class Printer
   QUEUE_NAME          = "print_queue"
-  PROCESS_QUEUE_NAME  = "printer_in_progress"
+  PROCESS_QUEUE_NAME  = "print_queue_in_progress"
   OUTPUT_PATH         = "formated_names.csv"
   EXPECTED_KEYS       = ["RegDate","first_Name","last_Name","Email_Address","HomePhone","Street","City","State","Zipcode"]
 
@@ -23,6 +23,7 @@ class Printer
   end
 
   def append_record(data)
+    puts "will append #{data} to the file"
     begin
       CSV.open(OUTPUT_PATH, "ab") do |csv|
         csv << data.values
