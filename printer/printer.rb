@@ -6,7 +6,6 @@ class Printer
   QUEUE_NAME          = "print_queue"
   PROCESS_QUEUE_NAME  = "print_queue_in_progress"
   OUTPUT_PATH         = "formatted_names.csv"
-  EXPECTED_KEYS       = ["RegDate","first_Name","last_Name","Email_Address","HomePhone","Street","City","State","Zipcode"]
 
   def call
     queue.process do |message|
