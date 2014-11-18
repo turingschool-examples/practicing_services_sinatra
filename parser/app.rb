@@ -10,7 +10,7 @@ class IdeaBoxApp < Sinatra::Base
   end
 
   get '/formatted' do
-    path = File.join(__dir__, "..", "formatted_names.csv")
+    path = File.join(__dir__, "..", "printer", "formatted_names.csv")
     content = CSV.read(path)
     content.to_json
   end
