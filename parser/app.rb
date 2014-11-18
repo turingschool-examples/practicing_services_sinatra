@@ -1,7 +1,12 @@
+require "pry"
 class IdeaBoxApp < Sinatra::Base
   get '/' do
-    #accept file upload
-    CsvParser.call
+    CsvParser.new.call
+  end
+
+  post '/' do
+    filepath = params[:filedata][:tempfile]
+    CsvParser.new(filepath).call
   end
 
   get '/formatted' do
