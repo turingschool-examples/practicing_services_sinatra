@@ -1,38 +1,20 @@
 require 'redis-queue'
 require 'json'
 require 'sunlight'
+require 'httparty'
 
 class PersonFetcher
-  PRINT_QUEUE = "print_queue"
-  PRINT_QUEUE_PROGRESS = "print_queue_in_process"
-  WAITING_QUEUE = "waiting_queue"
-  WAITING_QUEUE_PROGRESS = "waiting_queue_in_process"
-  attr_accessor :redis, :waiting_queue, :print_queue
-
-  def initialize
-    @redis = Redis.new
-    @waiting_queue = Redis::Queue.new(WAITING_QUEUE, WAITING_QUEUE_PROGRESS, :redis => redis)
-    @print_queue   = Redis::Queue.new(PRINT_QUEUE, PRINT_QUEUE_PROGRESS, :redis => redis)
-    Sunlight::Base.api_key = "f36d4c02185c42be86bcb6ab7c9c2091"
+  def process_record(record)
+    puts "fetcher will process record: #{record}"
+    person = JSON.parse(record)
+    person.merge!(senator: fetch_senator(person['zipcode']))
+    puts person.inspect
+    send_to_printer(person)
   end
 
-  def self.call
-    fetcher = self.new
-    fetcher.process_waiting_queue
-  end
-
-  def process_waiting_queue
-    waiting_queue.process do |message|
-      puts message
-      person = JSON.parse(message)
-      person.merge!(senator: fetch_senator(person['zipcode']))
-      puts person.inspect
-      add_to_print_queue(person)
-    end
-  end
-
-  def add_to_print_queue(person)
-    print_queue << person.to_json
+  def send_to_printer(person)
+    body = {'citizen' => person}.to_json
+    HTTParty.post('http://localhost:9393/', body: body, headers: {'Content-Type' => 'application/json'})
   end
 
   def fetch_senator(zipcode)

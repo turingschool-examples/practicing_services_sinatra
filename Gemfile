@@ -9,4 +9,5 @@ gem 'byebug'
 gem 'redis-queue'
 gem 'sunlight'
 gem 'pry'
-
+gem 'shotgun'
+gem 'httparty'

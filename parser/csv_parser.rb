@@ -1,3 +1,4 @@
+require "httparty"
 require 'csv'
 require 'json'
 
@@ -11,15 +12,16 @@ class CsvParser
 
   def call
     collect_people
-    send_to_queue
+    send_to_fetcher
   end
 
-  def send_to_queue
-    redis = Redis.new
-    queue = Redis::Queue.new("waiting_queue", "in_process", :redis => redis)
+  def send_to_fetcher
     @people.each do |person|
-      puts "CSV Parser will enqueue person: #{person}"
-      queue.push(person)
+      puts "CSV Parser will send person: #{person} to fetcher app"
+      body = {'citizen' => person}.to_json
+      HTTParty.post('http://localhost:9494/',
+                    body: body,
+                    headers: {'Content-Type' => 'application/json'})
     end
   end
 
