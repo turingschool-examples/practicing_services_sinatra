@@ -2,6 +2,7 @@ require 'csv'
 require 'json'
 
 class CsvParser
+  INPUT_FILE_PATH = File.join(__dir__, "full_event_attendees.csv")
   def initialize
     @people = []
   end
@@ -19,7 +20,7 @@ class CsvParser
   end
 
   def collect_people
-    CSV.foreach("files/full_event_attendees.csv", headers: true) do |person|
+    CSV.foreach(INPUT_FILE_PATH, headers: true) do |person|
       @people << hash_with_keepables(person)
     end
   end
