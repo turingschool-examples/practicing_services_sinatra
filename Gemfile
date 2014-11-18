@@ -7,4 +7,6 @@ gem 'rspec'
 gem 'rack-test'
 gem 'byebug'
 gem 'redis-queue'
+gem 'sunlight'
+gem 'pry'
 
